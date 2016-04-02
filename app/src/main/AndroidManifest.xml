@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="akrupych.callbase">
 
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
