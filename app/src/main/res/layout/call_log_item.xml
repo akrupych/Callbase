@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/fields_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Andriy Krupych" />
+
+            <TextView
+                android:id="@+id/number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="+380637467485" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="04.04.2016 01:49" />
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="69 seconds" />
+
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="incoming" />
+
+            <TextView
+                android:id="@+id/is_new"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="new" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actions_panel"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/call_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/custom_button"
+                android:src="@drawable/ic_local_phone_black_24dp"
+                android:contentDescription="@string/call" />
+
+            <ImageButton
+                android:id="@+id/sms_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/custom_button"
+                android:src="@drawable/ic_sms_black_24dp"
+                android:contentDescription="@string/sms" />
+
+            <ImageButton
+                android:id="@+id/contact_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/custom_button"
+                android:src="@drawable/ic_contacts_black_24dp"
+                android:contentDescription="@string/contact" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
