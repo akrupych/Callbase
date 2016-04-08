@@ -25,6 +25,10 @@ public class CallLogEntry {
         };
     }
 
+    public static String getOrderBy() {
+        return CallLog.Calls.DATE + " DESC";
+    }
+
     public static CallLogEntry from(Cursor cursor) {
         CallLogEntry result = new CallLogEntry();
         result.name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME));

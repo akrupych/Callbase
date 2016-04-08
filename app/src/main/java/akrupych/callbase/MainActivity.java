@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     CallLogEntry.getProjection(),
                     null,
                     null,
-                    null);
+                    CallLogEntry.getOrderBy());
             if (callLogCursor != null) {
                 showCallLog();
             }
