@@ -1,7 +1,9 @@
-package akrupych.callbase;
+package akrupych.callbase.calllog;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,53 +14,45 @@ import org.joda.time.format.PeriodFormat;
 
 import java.util.Locale;
 
+import akrupych.callbase.ActionHandler;
+import akrupych.callbase.ExpandableAdapter;
+import akrupych.callbase.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.CallLogViewHolder> implements View.OnClickListener {
+public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogViewHolder> {
 
+    private final Context context;
+    private final ActionHandler actionHandler;
     private Cursor callLogCursor;
-    private MainActivity activity;
     private int expandedPosition = -1;
 
-    public CallLogAdapter(Cursor callLogCursor, MainActivity activity) {
-        this.callLogCursor = callLogCursor;
-        this.activity = activity;
+    public CallLogAdapter(Context context, ActionHandler actionHandler) {
+        this.context = context;
+        this.actionHandler= actionHandler;
+    }
+
+    public void setData(Cursor cursor) {
+        callLogCursor = cursor;
+        notifyDataSetChanged();
     }
 
     @Override
     public CallLogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(activity).inflate(R.layout.call_log_item, parent, false);
-        view.setOnClickListener(this);
-        return new CallLogViewHolder(view);
+        View view = LayoutInflater.from(context).inflate(R.layout.call_log_item, parent, false);
+        return super.onCreateViewHolder(new CallLogViewHolder(view));
     }
 
     @Override
     public void onBindViewHolder(CallLogViewHolder holder, int position) {
         callLogCursor.moveToPosition(position);
-        holder.itemView.setTag(position);
         holder.bind(CallLogEntry.from(callLogCursor), position == expandedPosition);
+        super.onBindViewHolder(holder, position);
     }
 
     @Override
     public int getItemCount() {
-        return callLogCursor.getCount();
-    }
-
-    @Override
-    public void onClick(View v) {
-        expandItem((Integer) v.getTag());
-    }
-
-    public void expandItem(int position) {
-        if (position == expandedPosition) {
-            expandedPosition = -1;
-            notifyItemChanged(position);
-        } else {
-            notifyItemChanged(expandedPosition);
-            expandedPosition = position;
-            notifyItemChanged(expandedPosition);
-        }
+        return callLogCursor == null ? 0 : callLogCursor.getCount();
     }
 
     public class CallLogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -93,17 +87,22 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.CallLogV
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
-            nameTextView.setText(item.getName());
-            numberTextView.setText(item.getNumber());
-            dateTextView.setText(item.getDate().toString());
-            durationTextView.setText(PeriodFormat.wordBased(Locale.getDefault())
-                    .print(Period.seconds(item.getDuration())));
-            typeTextView.setText(item.getTypeString());
-            isNewTextView.setText(String.valueOf(item.isNew()));
+            bind(nameTextView, item.getName());
+            bind(numberTextView, item.getNumber());
+            bind(dateTextView, item.getDate().toString());
+            bind(durationTextView, item.getDuration() == 0 ? null :
+                    PeriodFormat.wordBased(Locale.getDefault()).print(Period.seconds(item.getDuration())));
+            bind(typeTextView, item.getTypeString());
+            bind(isNewTextView, item.isNew() ? "new" : null);
             actionsPanel.setVisibility(expanded ? View.VISIBLE : View.GONE);
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+        }
+
+        private void bind(TextView textView, String text) {
+            textView.setText(text);
+            textView.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
         }
 
         @Override
@@ -111,13 +110,13 @@ public class CallLogAdapter extends RecyclerView.Adapter<CallLogAdapter.CallLogV
             String number = (String) v.getTag();
             switch (v.getId()) {
                 case R.id.call_button:
-                    activity.call(number);
+                    actionHandler.call(number);
                     break;
                 case R.id.sms_button:
-                    activity.typeSms(number);
+                    actionHandler.sms(number);
                     break;
                 case R.id.contact_button:
-                    activity.openContact(number);
+                    actionHandler.openContact(number);
                     break;
             }
         }

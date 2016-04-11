@@ -1,4 +1,4 @@
-package akrupych.callbase;
+package akrupych.callbase.calllog;
 
 import android.database.Cursor;
 import android.provider.CallLog;
@@ -77,5 +77,24 @@ public class CallLogEntry {
             default:
                 return "UNKNOWN_TYPE";
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CallLogEntry)) return false;
+
+        CallLogEntry that = (CallLogEntry) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return number != null ? number.equals(that.number) : that.number == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (number != null ? number.hashCode() : 0);
+        return result;
     }
 }
