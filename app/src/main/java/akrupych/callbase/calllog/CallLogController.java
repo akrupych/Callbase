@@ -13,7 +13,13 @@ import akrupych.callbase.Constants;
 
 public class CallLogController {
 
-    public static Loader<Cursor> getCallLogLoader(Activity activity) {
+    private Activity activity;
+
+    public CallLogController(Activity activity) {
+        this.activity = activity;
+    }
+
+    public Loader<Cursor> getCallLogLoader() {
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_CALL_LOG) !=
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity,
@@ -24,10 +30,17 @@ public class CallLogController {
             return new CursorLoader(
                     activity,
                     CallLog.Calls.CONTENT_URI,
-                    CallLogEntry.getProjection(),
+                    new String[] {
+                            CallLog.Calls.CACHED_NAME,
+                            CallLog.Calls.NUMBER,
+                            CallLog.Calls.DATE,
+                            CallLog.Calls.NEW,
+                            CallLog.Calls.DURATION,
+                            CallLog.Calls.TYPE,
+                    },
                     null,
                     null,
-                    CallLogEntry.getOrderBy());
+                    CallLog.Calls.DATE + " DESC");
         }
     }
 }

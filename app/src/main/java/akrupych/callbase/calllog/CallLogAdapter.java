@@ -17,6 +17,7 @@ import java.util.Locale;
 import akrupych.callbase.ActionHandler;
 import akrupych.callbase.ExpandableAdapter;
 import akrupych.callbase.R;
+import akrupych.callbase.model.CallLogEntry;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -87,20 +88,20 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
-            bind(nameTextView, item.getName());
-            bind(numberTextView, item.getNumber());
-            bind(dateTextView, item.getDate().toString());
-            bind(durationTextView, item.getDuration() == 0 ? null :
+            setTextOrHide(nameTextView, item.getName());
+            setTextOrHide(numberTextView, item.getNumber());
+            setTextOrHide(dateTextView, item.getDateFormatted());
+            setTextOrHide(durationTextView, item.getDuration() == 0 ? null :
                     PeriodFormat.wordBased(Locale.getDefault()).print(Period.seconds(item.getDuration())));
-            bind(typeTextView, item.getTypeString());
-            bind(isNewTextView, item.isNew() ? "new" : null);
+            setTextOrHide(typeTextView, item.getTypeString());
+            setTextOrHide(isNewTextView, item.isNew() ? "new" : null);
             actionsPanel.setVisibility(expanded ? View.VISIBLE : View.GONE);
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
         }
 
-        private void bind(TextView textView, String text) {
+        private void setTextOrHide(TextView textView, String text) {
             textView.setText(text);
             textView.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
         }

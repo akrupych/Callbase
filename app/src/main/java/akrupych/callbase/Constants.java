@@ -8,6 +8,7 @@ public class Constants {
 
     public static final int LOADER_CALL_LOG = 3;
     public static final int LOADER_SEARCH_CALL_LOG = 4;
+    public static final int LOADER_SEARCH_CONTACTS = 5;
 
     public static final String ARG_SEARCH_QUERY = "ARG_SEARCH_QUERY";
 }

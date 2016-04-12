@@ -1,9 +1,16 @@
-package akrupych.callbase.calllog;
+package akrupych.callbase.model;
 
 import android.database.Cursor;
 import android.provider.CallLog;
+import android.text.format.DateUtils;
+
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
+import java.util.Locale;
 
 public class CallLogEntry {
 
@@ -14,25 +21,16 @@ public class CallLogEntry {
     private int duration;
     private int type;
 
-    public static String[] getProjection() {
-        return new String[] {
-                CallLog.Calls.CACHED_NAME,
-                CallLog.Calls.NUMBER,
-                CallLog.Calls.DATE,
-                CallLog.Calls.NEW,
-                CallLog.Calls.DURATION,
-                CallLog.Calls.TYPE,
-        };
-    }
-
-    public static String getOrderBy() {
-        return CallLog.Calls.DATE + " DESC";
-    }
-
     public static CallLogEntry from(Cursor cursor) {
         CallLogEntry result = new CallLogEntry();
         result.name = cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME));
-        result.number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER));
+        try {
+            result.number = PhoneNumberUtil.getInstance().format(
+                    PhoneNumberUtil.getInstance().parse(cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)), "UA"),
+                    PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL);
+        } catch (NumberParseException e) {
+            e.printStackTrace();
+        }
         result.date = new DateTime(cursor.getLong(cursor.getColumnIndex(CallLog.Calls.DATE)));
         result.isNew = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.NEW)) != 0;
         result.duration = cursor.getInt(cursor.getColumnIndex(CallLog.Calls.DURATION));
@@ -50,6 +48,18 @@ public class CallLogEntry {
 
     public DateTime getDate() {
         return date;
+    }
+
+    public String getDateFormatted() {
+        if (date.isAfter(DateTime.now().minusDays(1).withTimeAtStartOfDay())) {
+            // today or yesterday
+            return DateUtils.getRelativeTimeSpanString(date.getMillis(), System.currentTimeMillis(),
+                    DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString() + ", " +
+                    DateTimeFormat.shortTime().print(date);
+        } else {
+            return DateTimeFormat.forPattern("EEEE, " + DateTimeFormat.patternForStyle("SS", Locale.getDefault()))
+                    .withLocale(Locale.getDefault()).print(date);
+        }
     }
 
     public boolean isNew() {

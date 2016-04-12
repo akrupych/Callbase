@@ -36,7 +36,10 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
     @Bind(R.id.call_log)
     RecyclerView recyclerView;
 
+    private CallLogController callLogController = new CallLogController(this);
     private CallLogAdapter callLogAdapter = new CallLogAdapter(this, this);
+
+    private SearchController searchController = new SearchController(this);
     private SearchAdapter searchAdapter = new SearchAdapter(this, this);
 
     @Override
@@ -52,9 +55,11 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case Constants.LOADER_CALL_LOG:
-                return CallLogController.getCallLogLoader(this);
+                return callLogController.getCallLogLoader();
             case Constants.LOADER_SEARCH_CALL_LOG:
-                return SearchController.getSearchCallLogLoader(this, args);
+                return searchController.getSearchCallLogLoader(args);
+            case Constants.LOADER_SEARCH_CONTACTS:
+                return searchController.getSearchContactsLoader(args);
         }
         return null;
     }
@@ -66,8 +71,23 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                 callLogAdapter.setData(data);
                 break;
             case Constants.LOADER_SEARCH_CALL_LOG:
-                searchAdapter.setCallLogData(data);
+                searchController.addResult(Constants.LOADER_SEARCH_CALL_LOG, data);
+                trySetSearchData();
                 break;
+            case Constants.LOADER_SEARCH_CONTACTS:
+                searchController.addResult(Constants.LOADER_SEARCH_CONTACTS, data);
+                trySetSearchData();
+                break;
+        }
+    }
+
+    private void trySetSearchData() {
+        if (searchController.resultsReady()) {
+            searchAdapter.setData(
+                    searchController.getResult(Constants.LOADER_SEARCH_CALL_LOG),
+                    searchController.getResult(Constants.LOADER_SEARCH_CONTACTS)
+            );
+            searchController.clearResults();
         }
     }
 
@@ -78,7 +98,10 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                 callLogAdapter.setData(null);
                 break;
             case Constants.LOADER_SEARCH_CALL_LOG:
-                searchAdapter.setCallLogData(null);
+                searchAdapter.clear();
+                break;
+            case Constants.LOADER_SEARCH_CONTACTS:
+                searchAdapter.clear();
                 break;
         }
     }
@@ -112,9 +135,10 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
             public boolean onQueryTextChange(String s) {
                 Log.d(TAG, "onQueryTextChange " + s);
                 if (TextUtils.isEmpty(s)) {
-                    searchAdapter.setCallLogData(null);
+                    searchAdapter.clear();
                 } else {
                     load(Constants.LOADER_SEARCH_CALL_LOG, s);
+                    load(Constants.LOADER_SEARCH_CONTACTS, s);
                 }
                 return false;
             }
