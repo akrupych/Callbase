@@ -66,7 +66,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/custom_button"
-                android:src="@drawable/ic_local_phone_black_24dp"
+                android:src="@drawable/ic_local_phone"
                 android:contentDescription="@string/call" />
 
             <ImageButton
@@ -75,7 +75,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/custom_button"
-                android:src="@drawable/ic_sms_black_24dp"
+                android:src="@drawable/ic_sms"
                 android:contentDescription="@string/sms" />
 
             <ImageButton
@@ -84,7 +84,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/custom_button"
-                android:src="@drawable/ic_contacts_black_24dp"
+                android:src="@drawable/ic_contacts"
                 android:contentDescription="@string/contact" />
         </LinearLayout>
     </LinearLayout>

@@ -23,10 +23,9 @@ import butterknife.ButterKnife;
 
 public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogViewHolder> {
 
-    private final Context context;
-    private final ActionHandler actionHandler;
-    private Cursor callLogCursor;
-    private int expandedPosition = -1;
+    protected final Context context;
+    protected final ActionHandler actionHandler;
+    protected Cursor callLogCursor;
 
     public CallLogAdapter(Context context, ActionHandler actionHandler) {
         this.context = context;

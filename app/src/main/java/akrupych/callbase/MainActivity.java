@@ -1,11 +1,13 @@
 package akrupych.callbase;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 
 import akrupych.callbase.calllog.CallLogAdapter;
 import akrupych.callbase.calllog.CallLogController;
+import akrupych.callbase.calllog.ContractedCallLogAdapter;
 import akrupych.callbase.search.SearchAdapter;
 import akrupych.callbase.search.SearchController;
 import butterknife.Bind;
@@ -31,10 +34,14 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements ActionHandler,
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private enum Mode {
+        CALL_LOG,
+        SEARCH
+    }
+
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @Bind(R.id.call_log)
-    RecyclerView recyclerView;
+    @Bind(R.id.call_log) RecyclerView recyclerView;
 
     private CallLogController callLogController = new CallLogController(this);
     private CallLogAdapter callLogAdapter = new CallLogAdapter(this, this);
@@ -42,13 +49,34 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
     private SearchController searchController = new SearchController(this);
     private SearchAdapter searchAdapter = new SearchAdapter(this, this);
 
+    private Mode currentMode = Mode.CALL_LOG;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ButterKnife.bind(this);
-        recyclerView.setAdapter(callLogAdapter);
+        loadCallLog();
+    }
+
+    private void loadCallLog() {
+        callLogAdapter = App.getInstance().getSettings().showFullCallLog() ?
+                new CallLogAdapter(this, this) : new ContractedCallLogAdapter(this, this);
+        setMode(Mode.CALL_LOG);
         load(Constants.LOADER_CALL_LOG, null);
+    }
+
+    private void setMode(Mode newMode) {
+        currentMode = newMode;
+        switch (currentMode) {
+            case CALL_LOG:
+                recyclerView.setAdapter(callLogAdapter);
+                break;
+            case SEARCH:
+                recyclerView.setAdapter(searchAdapter);
+                break;
+        }
     }
 
     @Override
@@ -115,13 +143,13 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 Log.d(TAG, "onMenuItemActionCollapse " + item.getTitle());
-                recyclerView.setAdapter(callLogAdapter);
+                setMode(Mode.CALL_LOG);
                 return true;
             }
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 Log.d(TAG, "onMenuItemActionExpand " + item.getTitle());
-                recyclerView.setAdapter(searchAdapter);
+                setMode(Mode.SEARCH);
                 return true;
             }
         });
@@ -144,6 +172,32 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                openSettings();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openSettings() {
+        startActivityForResult(new Intent(this, SettingsActivity.class), Constants.REQUEST_SETTINGS);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constants.REQUEST_SETTINGS:
+                if (resultCode == Activity.RESULT_OK && currentMode == Mode.CALL_LOG) {
+                    loadCallLog();
+                }
+                break;
+        }
     }
 
     @Override

@@ -1,7 +1,13 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Callbase</string>
     <string name="call">Call</string>
     <string name="sms">SMS</string>
     <string name="contact">Contact</string>
     <string name="search">Search</string>
+
+    <string name="preference_full_call_log"><xliff:g id="preference_key">full_call_log</xliff:g></string>
+    <string name="preference_full_call_log_title">Show full call log</string>
+    <string name="preference_full_call_log_unchecked_summary">One entry is shown for every number with the last event displayed</string>
+    <string name="preference_full_call_log_checked_summary">All call events are displayed and ordered by time</string>
+    <string name="settings">Settings</string>
 </resources>

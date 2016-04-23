@@ -7,7 +7,7 @@ public abstract class ExpandableAdapter<T extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<T>
         implements View.OnClickListener {
 
-    private int expandedPosition = -1;
+    protected int expandedPosition = -1;
 
     public T onCreateViewHolder(T holder) {
         holder.itemView.setOnClickListener(this);
