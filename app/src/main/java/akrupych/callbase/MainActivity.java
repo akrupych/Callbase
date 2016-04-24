@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         setContentView(R.layout.activity_main);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ButterKnife.bind(this);
+        recyclerView.addItemDecoration(new SpaceItemDecoration(
+                getResources().getDimensionPixelSize(R.dimen.item_spacing), true, true));
         loadCallLog();
     }
 
