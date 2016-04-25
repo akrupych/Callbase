@@ -2,12 +2,16 @@ package akrupych.callbase.search;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.CallLog;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -19,6 +23,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import akrupych.callbase.ActionHandler;
+import akrupych.callbase.ContactsGlideLoader;
 import akrupych.callbase.ExpandableAdapter;
 import akrupych.callbase.R;
 import akrupych.callbase.model.CallLogEntry;
@@ -147,7 +152,7 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
 
     @Override
     public SearchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.call_log_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.callable_item, parent, false);
         return super.onCreateViewHolder(new SearchViewHolder(view));
     }
 
@@ -168,6 +173,10 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
 
     public class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @Bind(R.id.photo)
+        ImageView photoImageView;
+        @Bind(R.id.call_type)
+        ImageView callTypeImageView;
         @Bind(R.id.name)
         TextView nameTextView;
         @Bind(R.id.number)
@@ -176,10 +185,6 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
         TextView dateTextView;
         @Bind(R.id.duration)
         TextView durationTextView;
-        @Bind(R.id.type)
-        TextView typeTextView;
-        @Bind(R.id.is_new)
-        TextView isNewTextView;
         @Bind(R.id.actions_panel)
         View actionsPanel;
         @Bind(R.id.call_button)
@@ -198,13 +203,16 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
+            Glide.with(context).using(new ContactsGlideLoader(context))
+                    .load(item.getNumber())
+                    .error(R.mipmap.ic_launcher)
+                    .into(photoImageView);
+            Glide.with(context).load(getDrawableForCallType(item.getType())).into(callTypeImageView);
             setTextOrHide(nameTextView, item.getName());
             setTextOrHide(numberTextView, item.getNumber());
             setTextOrHide(dateTextView, item.getDateFormatted());
             setTextOrHide(durationTextView, item.getDuration() == 0 ? null :
                     PeriodFormat.wordBased(Locale.getDefault()).print(Period.seconds(item.getDuration())));
-            setTextOrHide(typeTextView, item.getTypeString());
-            setTextOrHide(isNewTextView, item.isNew() ? "new" : null);
             actionsPanel.setVisibility(expanded ? View.VISIBLE : View.GONE);
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
@@ -212,16 +220,34 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
         }
 
         public void bind(ContactEntry item, boolean expanded) {
+            Glide.with(context).using(new ContactsGlideLoader(context))
+                    .load(item.getNumber())
+                    .error(R.mipmap.ic_launcher)
+                    .into(photoImageView);
+            Glide.with(context).load(0).into(callTypeImageView);
             setTextOrHide(nameTextView, item.getName());
             setTextOrHide(numberTextView, item.getNumber());
             setTextOrHide(dateTextView, null);
             setTextOrHide(durationTextView, null);
-            setTextOrHide(typeTextView, null);
-            setTextOrHide(isNewTextView, null);
             actionsPanel.setVisibility(expanded ? View.VISIBLE : View.GONE);
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+        }
+
+        private int getDrawableForCallType(int type) {
+            switch (type) {
+                case CallLog.Calls.INCOMING_TYPE:
+                    return R.drawable.incoming_call;
+                case CallLog.Calls.OUTGOING_TYPE:
+                    return R.drawable.outgoing_call;
+                case CallLog.Calls.MISSED_TYPE:
+                    return R.drawable.missed_call;
+                case CallLog.Calls.VOICEMAIL_TYPE:
+                    return R.drawable.voicemail_call;
+                default:
+                    return 0;
+            }
         }
 
         private void setTextOrHide(TextView textView, String text) {

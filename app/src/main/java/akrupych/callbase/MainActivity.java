@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -241,23 +240,8 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                     new String[] {Manifest.permission.READ_CONTACTS},
                     Constants.REQUEST_READ_CONTACTS);
         } else {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.withAppendedPath(
-                    ContactsContract.Contacts.CONTENT_URI, String.valueOf(getContactId(number)))));
+            startActivity(new Intent(Intent.ACTION_VIEW, ContactFetcher.getContactUri(this, number)));
         }
-    }
-
-    private long getContactId(String number) {
-        Uri contactLookup = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-        Cursor contactLookupCursor = getContentResolver().query(contactLookup,
-                new String[]{ContactsContract.PhoneLookup._ID}, null, null, null);
-        assert contactLookupCursor != null;
-        if (contactLookupCursor.moveToNext()) {
-            long ret = contactLookupCursor.getLong(contactLookupCursor.getColumnIndexOrThrow(ContactsContract.PhoneLookup._ID));
-            contactLookupCursor.close();
-            return ret;
-        }
-        contactLookupCursor.close();
-        return 0;
     }
 
     private void load(int loaderId, @Nullable String query) {
