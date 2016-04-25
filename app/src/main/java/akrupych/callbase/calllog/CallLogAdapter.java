@@ -26,10 +26,12 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
     protected final Context context;
     protected final ActionHandler actionHandler;
     protected Cursor callLogCursor;
+    protected String unknownName;
 
     public CallLogAdapter(Context context, ActionHandler actionHandler) {
         this.context = context;
-        this.actionHandler= actionHandler;
+        this.actionHandler = actionHandler;
+        this.unknownName = context.getString(R.string.unknown);
     }
 
     public void setData(Cursor cursor) {
@@ -87,7 +89,7 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
-            setTextOrHide(nameTextView, item.getName());
+            setTextOrDefault(nameTextView, item.getName(), unknownName);
             setTextOrHide(numberTextView, item.getNumber());
             setTextOrHide(dateTextView, item.getDateFormatted());
             setTextOrHide(durationTextView, item.getDuration() == 0 ? null :
@@ -98,6 +100,10 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+        }
+
+        private void setTextOrDefault(TextView textView, String text, String defaultText) {
+            textView.setText(TextUtils.isEmpty(text) ? defaultText : text);
         }
 
         private void setTextOrHide(TextView textView, String text) {

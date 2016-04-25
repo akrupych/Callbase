@@ -43,11 +43,11 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Bind(R.id.call_log) RecyclerView recyclerView;
 
-    private CallLogController callLogController = new CallLogController(this);
-    private CallLogAdapter callLogAdapter = new CallLogAdapter(this, this);
+    private CallLogController callLogController;
+    private CallLogAdapter callLogAdapter;
 
-    private SearchController searchController = new SearchController(this);
-    private SearchAdapter searchAdapter = new SearchAdapter(this, this);
+    private SearchController searchController;
+    private SearchAdapter searchAdapter;
 
     private Mode currentMode = Mode.CALL_LOG;
 
@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         ButterKnife.bind(this);
         recyclerView.addItemDecoration(new SpaceItemDecoration(
                 getResources().getDimensionPixelSize(R.dimen.item_spacing), true, true));
+        callLogController = new CallLogController(this);
+        callLogAdapter = new CallLogAdapter(this, this);
+        searchController = new SearchController(this);
+        searchAdapter = new SearchAdapter(this, this);
         loadCallLog();
     }
 
