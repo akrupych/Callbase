@@ -16,14 +16,14 @@ import java.util.Map;
 
 import akrupych.callbase.Constants;
 
-public class SearchController {
+public class SearchFetcher {
 
     private static final int SEARCH_SOURCES_NUMBER = 2;
 
     private final Activity activity;
     private Map<Integer, Cursor> searchResults = new HashMap<>();
 
-    public SearchController(Activity activity) {
+    public SearchFetcher(Activity activity) {
         this.activity = activity;
     }
 

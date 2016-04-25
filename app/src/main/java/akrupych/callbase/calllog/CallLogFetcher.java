@@ -11,11 +11,11 @@ import android.support.v4.content.Loader;
 
 import akrupych.callbase.Constants;
 
-public class CallLogController {
+public class CallLogFetcher {
 
     private Activity activity;
 
-    public CallLogController(Activity activity) {
+    public CallLogFetcher(Activity activity) {
         this.activity = activity;
     }
 

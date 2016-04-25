@@ -24,10 +24,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import akrupych.callbase.calllog.CallLogAdapter;
-import akrupych.callbase.calllog.CallLogController;
+import akrupych.callbase.calllog.CallLogFetcher;
 import akrupych.callbase.calllog.ContractedCallLogAdapter;
 import akrupych.callbase.search.SearchAdapter;
-import akrupych.callbase.search.SearchController;
+import akrupych.callbase.search.SearchFetcher;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -43,10 +43,10 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Bind(R.id.call_log) RecyclerView recyclerView;
 
-    private CallLogController callLogController;
+    private CallLogFetcher callLogFetcher;
     private CallLogAdapter callLogAdapter;
 
-    private SearchController searchController;
+    private SearchFetcher searchFetcher;
     private SearchAdapter searchAdapter;
 
     private Mode currentMode = Mode.CALL_LOG;
@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         ButterKnife.bind(this);
         recyclerView.addItemDecoration(new SpaceItemDecoration(
                 getResources().getDimensionPixelSize(R.dimen.item_spacing), true, true));
-        callLogController = new CallLogController(this);
+        callLogFetcher = new CallLogFetcher(this);
         callLogAdapter = new CallLogAdapter(this, this);
-        searchController = new SearchController(this);
+        searchFetcher = new SearchFetcher(this);
         searchAdapter = new SearchAdapter(this, this);
         loadCallLog();
     }
@@ -89,11 +89,11 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case Constants.LOADER_CALL_LOG:
-                return callLogController.getCallLogLoader();
+                return callLogFetcher.getCallLogLoader();
             case Constants.LOADER_SEARCH_CALL_LOG:
-                return searchController.getSearchCallLogLoader(args);
+                return searchFetcher.getSearchCallLogLoader(args);
             case Constants.LOADER_SEARCH_CONTACTS:
-                return searchController.getSearchContactsLoader(args);
+                return searchFetcher.getSearchContactsLoader(args);
         }
         return null;
     }
@@ -105,23 +105,23 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                 callLogAdapter.setData(data);
                 break;
             case Constants.LOADER_SEARCH_CALL_LOG:
-                searchController.addResult(Constants.LOADER_SEARCH_CALL_LOG, data);
+                searchFetcher.addResult(Constants.LOADER_SEARCH_CALL_LOG, data);
                 trySetSearchData();
                 break;
             case Constants.LOADER_SEARCH_CONTACTS:
-                searchController.addResult(Constants.LOADER_SEARCH_CONTACTS, data);
+                searchFetcher.addResult(Constants.LOADER_SEARCH_CONTACTS, data);
                 trySetSearchData();
                 break;
         }
     }
 
     private void trySetSearchData() {
-        if (searchController.resultsReady()) {
+        if (searchFetcher.resultsReady()) {
             searchAdapter.setData(
-                    searchController.getResult(Constants.LOADER_SEARCH_CALL_LOG),
-                    searchController.getResult(Constants.LOADER_SEARCH_CONTACTS)
+                    searchFetcher.getResult(Constants.LOADER_SEARCH_CALL_LOG),
+                    searchFetcher.getResult(Constants.LOADER_SEARCH_CONTACTS)
             );
-            searchController.clearResults();
+            searchFetcher.clearResults();
         }
     }
 
