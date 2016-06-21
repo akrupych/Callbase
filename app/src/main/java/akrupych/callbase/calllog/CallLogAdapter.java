@@ -87,6 +87,8 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
         View smsButton;
         @Bind(R.id.contact_button)
         View contactButton;
+        @Bind(R.id.copy_button)
+        View copyButton;
 
         public CallLogViewHolder(View itemView) {
             super(itemView);
@@ -94,6 +96,7 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
             callButton.setOnClickListener(this);
             smsButton.setOnClickListener(this);
             contactButton.setOnClickListener(this);
+            copyButton.setOnClickListener(this);
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
@@ -113,6 +116,7 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+            copyButton.setTag(item.getNumber());
         }
 
         private int getDrawableForCallType(int type) {
@@ -151,6 +155,9 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
                     break;
                 case R.id.contact_button:
                     actionHandler.openContact(number);
+                    break;
+                case R.id.copy_button:
+                    actionHandler.copy(number);
                     break;
             }
         }

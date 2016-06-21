@@ -98,6 +98,15 @@
                 android:background="@drawable/custom_button"
                 android:contentDescription="@string/contact"
                 android:src="@drawable/ic_contacts" />
+
+            <ImageButton
+                android:id="@+id/copy_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/custom_button"
+                android:contentDescription="@string/contact"
+                android:src="@drawable/ic_copy" />
         </LinearLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

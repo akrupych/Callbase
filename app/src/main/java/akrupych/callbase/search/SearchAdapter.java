@@ -193,6 +193,8 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
         View smsButton;
         @Bind(R.id.contact_button)
         View contactButton;
+        @Bind(R.id.copy_button)
+        View copyButton;
 
         public SearchViewHolder(View itemView) {
             super(itemView);
@@ -200,6 +202,7 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
             callButton.setOnClickListener(this);
             smsButton.setOnClickListener(this);
             contactButton.setOnClickListener(this);
+            copyButton.setOnClickListener(this);
         }
 
         public void bind(CallLogEntry item, boolean expanded) {
@@ -217,6 +220,7 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+            copyButton.setTag(item.getNumber());
         }
 
         public void bind(ContactEntry item, boolean expanded) {
@@ -233,6 +237,7 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
             callButton.setTag(item.getNumber());
             smsButton.setTag(item.getNumber());
             contactButton.setTag(item.getNumber());
+            copyButton.setTag(item.getNumber());
         }
 
         private int getDrawableForCallType(int type) {
@@ -267,6 +272,9 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
                     break;
                 case R.id.contact_button:
                     actionHandler.openContact(number);
+                    break;
+                case R.id.copy_button:
+                    actionHandler.copy(number);
                     break;
             }
         }

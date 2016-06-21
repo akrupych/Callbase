@@ -8,4 +8,5 @@ public interface ActionHandler {
 
     void openContact(String number);
 
+    void copy(String number);
 }

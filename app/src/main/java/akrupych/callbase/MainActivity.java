@@ -2,6 +2,8 @@ package akrupych.callbase;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -262,6 +264,13 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         } else {
             startActivity(new Intent(Intent.ACTION_VIEW, ContactFetcher.getContactUri(this, number)));
         }
+    }
+
+    @Override
+    public void copy(String number) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(null, number);
+        clipboard.setPrimaryClip(clip);
     }
 
     private void load(int loaderId, @Nullable String query) {
