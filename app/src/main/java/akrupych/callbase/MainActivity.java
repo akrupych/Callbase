@@ -52,12 +52,19 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate " + savedInstanceState);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ButterKnife.bind(this);
         recyclerView.addItemDecoration(new SpaceItemDecoration(
                 getResources().getDimensionPixelSize(R.dimen.item_spacing), true, true));
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume");
+        super.onResume();
         callLogFetcher = new CallLogFetcher(this);
         callLogAdapter = new CallLogAdapter(this, this);
         searchFetcher = new SearchFetcher(this);
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "onCreateLoader " + id);
         switch (id) {
             case Constants.LOADER_CALL_LOG:
                 return callLogFetcher.getCallLogLoader();
@@ -99,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(TAG, "onLoadFinished " + loader.getId());
         switch (loader.getId()) {
             case Constants.LOADER_CALL_LOG:
                 callLogAdapter.setData(data);
@@ -126,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.d(TAG, "onLoaderReset " + loader.getId());
         switch (loader.getId()) {
             case Constants.LOADER_CALL_LOG:
                 callLogAdapter.setData(null);
