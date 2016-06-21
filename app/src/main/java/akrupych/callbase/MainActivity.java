@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -23,6 +24,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import akrupych.callbase.calllog.CallLogAdapter;
 import akrupych.callbase.calllog.CallLogFetcher;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Bind(R.id.call_log) RecyclerView recyclerView;
+    @Bind(R.id.dial_button) FloatingActionButton dialButton;
 
     private CallLogFetcher callLogFetcher;
     private CallLogAdapter callLogAdapter;
@@ -61,6 +64,12 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         ButterKnife.bind(this);
         recyclerView.addItemDecoration(new SpaceItemDecoration(
                 getResources().getDimensionPixelSize(R.dimen.item_spacing), true, true));
+        dialButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_DIAL).setData(Uri.parse("tel:")));
+            }
+        });
     }
 
     @Override
