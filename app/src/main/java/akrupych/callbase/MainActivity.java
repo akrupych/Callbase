@@ -72,6 +72,13 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         loadCallLog();
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        super.onPause();
+        callLogFetcher.clearNewCalls();
+    }
+
     private void loadCallLog() {
         callLogAdapter = App.getInstance().getSettings().showFullCallLog() ?
                 new CallLogAdapter(this, this) : new ContractedCallLogAdapter(this, this);
@@ -221,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         switch (requestCode) {
             case Constants.REQUEST_READ_CALL_LOG:
                 load(Constants.LOADER_CALL_LOG, null);
+                break;
+            case Constants.REQUEST_WRITE_CALL_LOG:
+                callLogFetcher.clearNewCalls();
                 break;
         }
     }
