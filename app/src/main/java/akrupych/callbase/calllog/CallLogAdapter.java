@@ -29,13 +29,11 @@ import butterknife.ButterKnife;
 
 public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogViewHolder> {
 
-    protected final Context context;
-    protected final ActionHandler actionHandler;
     protected Cursor callLogCursor;
     protected String unknownName;
 
     public CallLogAdapter(Context context, ActionHandler actionHandler) {
-        this.context = context;
+        super(context, actionHandler);
         this.actionHandler = actionHandler;
         this.unknownName = context.getString(R.string.unknown);
     }

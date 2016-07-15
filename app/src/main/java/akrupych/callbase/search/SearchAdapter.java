@@ -40,14 +40,11 @@ import rx.schedulers.Schedulers;
 
 public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHolder> {
 
-    private final Context context;
-    private final ActionHandler actionHandler;
     private List<CallLogEntry> callLogResults = new ArrayList<>();
     private List<ContactEntry> contactsResults = new ArrayList<>();
 
     public SearchAdapter(Context context, ActionHandler actionHandler) {
-        this.context = context;
-        this.actionHandler= actionHandler;
+        super(context, actionHandler);
     }
 
     public void setData(Cursor callLogCursor, Cursor contactsCursor) {
