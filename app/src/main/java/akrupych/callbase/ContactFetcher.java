@@ -29,7 +29,7 @@ public class ContactFetcher {
 
     public static Uri getContactUri(Context context, String number) {
         long contactId = getContactId(context, number);
-        return ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        return contactId == 0 ? null : ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
     }
 
     public static Bitmap retrieveContactPhoto(Context context, String number) {

@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -284,7 +285,15 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                     new String[] {Manifest.permission.READ_CONTACTS},
                     Constants.REQUEST_READ_CONTACTS);
         } else {
-            startActivity(new Intent(Intent.ACTION_VIEW, ContactFetcher.getContactUri(this, number)));
+            Uri contactUri = ContactFetcher.getContactUri(this, number);
+            if (contactUri != null) {
+                startActivity(new Intent(Intent.ACTION_VIEW, contactUri));
+            } else {
+                Intent createContactIntent = new Intent(ContactsContract.Intents.Insert.ACTION)
+                        .setType(ContactsContract.RawContacts.CONTENT_TYPE)
+                        .putExtra(ContactsContract.Intents.Insert.PHONE, number);
+                startActivity(createContactIntent);
+            }
         }
     }
 
