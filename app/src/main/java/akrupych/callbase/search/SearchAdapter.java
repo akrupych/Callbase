@@ -150,6 +150,11 @@ public class SearchAdapter extends ExpandableAdapter<SearchAdapter.SearchViewHol
         notifyDataSetChanged();
     }
 
+    public void resetSelection() {
+        expandedPosition = -1;
+        notifyDataSetChanged();
+    }
+
     @Override
     public SearchViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.callable_item, parent, false);

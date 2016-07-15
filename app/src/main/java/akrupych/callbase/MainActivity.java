@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         SEARCH
     }
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "qwerty";
 
     @Bind(R.id.call_log) RecyclerView recyclerView;
     @Bind(R.id.dial_button) FloatingActionButton dialButton;
@@ -70,17 +70,19 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
                 startActivity(new Intent(Intent.ACTION_DIAL).setData(Uri.parse("tel:")));
             }
         });
+        callLogFetcher = new CallLogFetcher(this);
+        callLogAdapter = App.getInstance().getSettings().showFullCallLog() ?
+                new CallLogAdapter(this, this) : new ContractedCallLogAdapter(this, this);
+        searchFetcher = new SearchFetcher(this);
+        searchAdapter = new SearchAdapter(this, this);
+        load(Constants.LOADER_CALL_LOG, null);
+        setMode(currentMode);
     }
 
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        callLogFetcher = new CallLogFetcher(this);
-        callLogAdapter = new CallLogAdapter(this, this);
-        searchFetcher = new SearchFetcher(this);
-        searchAdapter = new SearchAdapter(this, this);
-        loadCallLog();
     }
 
     @Override
@@ -88,13 +90,8 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         Log.d(TAG, "onPause");
         super.onPause();
         callLogFetcher.clearNewCalls();
-    }
-
-    private void loadCallLog() {
-        callLogAdapter = App.getInstance().getSettings().showFullCallLog() ?
-                new CallLogAdapter(this, this) : new ContractedCallLogAdapter(this, this);
-        setMode(Mode.CALL_LOG);
-        load(Constants.LOADER_CALL_LOG, null);
+        callLogAdapter.resetSelection();
+        searchAdapter.resetSelection();
     }
 
     private void setMode(Mode newMode) {
@@ -102,22 +99,27 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         switch (currentMode) {
             case CALL_LOG:
                 recyclerView.setAdapter(callLogAdapter);
+                getLoaderManager().destroyLoader(Constants.LOADER_SEARCH_CALL_LOG);
+                getLoaderManager().destroyLoader(Constants.LOADER_SEARCH_CONTACTS);
                 break;
             case SEARCH:
                 recyclerView.setAdapter(searchAdapter);
+                getLoaderManager().destroyLoader(Constants.LOADER_CALL_LOG);
                 break;
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d(TAG, "onCreateLoader " + id);
         switch (id) {
             case Constants.LOADER_CALL_LOG:
+                Log.d(TAG, "onCreateLoader LOADER_CALL_LOG");
                 return callLogFetcher.getCallLogLoader();
             case Constants.LOADER_SEARCH_CALL_LOG:
+                Log.d(TAG, "onCreateLoader LOADER_SEARCH_CALL_LOG");
                 return searchFetcher.getSearchCallLogLoader(args);
             case Constants.LOADER_SEARCH_CONTACTS:
+                Log.d(TAG, "onCreateLoader LOADER_SEARCH_CONTACTS");
                 return searchFetcher.getSearchContactsLoader(args);
         }
         return null;
@@ -125,16 +127,18 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(TAG, "onLoadFinished " + loader.getId());
         switch (loader.getId()) {
             case Constants.LOADER_CALL_LOG:
+                Log.d(TAG, "onLoadFinished LOADER_CALL_LOG");
                 callLogAdapter.setData(data);
                 break;
             case Constants.LOADER_SEARCH_CALL_LOG:
+                Log.d(TAG, "onLoadFinished LOADER_SEARCH_CALL_LOG");
                 searchFetcher.addResult(Constants.LOADER_SEARCH_CALL_LOG, data);
                 trySetSearchData();
                 break;
             case Constants.LOADER_SEARCH_CONTACTS:
+                Log.d(TAG, "onLoadFinished LOADER_SEARCH_CONTACTS");
                 searchFetcher.addResult(Constants.LOADER_SEARCH_CONTACTS, data);
                 trySetSearchData();
                 break;
@@ -153,15 +157,17 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(TAG, "onLoaderReset " + loader.getId());
         switch (loader.getId()) {
             case Constants.LOADER_CALL_LOG:
+                Log.d(TAG, "onLoaderReset LOADER_CALL_LOG");
                 callLogAdapter.setData(null);
                 break;
             case Constants.LOADER_SEARCH_CALL_LOG:
+                Log.d(TAG, "onLoaderReset LOADER_SEARCH_CALL_LOG");
                 searchAdapter.clear();
                 break;
             case Constants.LOADER_SEARCH_CONTACTS:
+                Log.d(TAG, "onLoaderReset LOADER_SEARCH_CONTACTS");
                 searchAdapter.clear();
                 break;
         }
@@ -227,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements ActionHandler,
         switch (requestCode) {
             case Constants.REQUEST_SETTINGS:
                 if (resultCode == Activity.RESULT_OK && currentMode == Mode.CALL_LOG) {
-                    loadCallLog();
+                    load(Constants.LOADER_CALL_LOG, null);
                 }
                 break;
         }

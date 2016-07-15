@@ -63,6 +63,11 @@ public class CallLogAdapter extends ExpandableAdapter<CallLogAdapter.CallLogView
         return callLogCursor == null ? 0 : callLogCursor.getCount();
     }
 
+    public void resetSelection() {
+        expandedPosition = -1;
+        notifyDataSetChanged();
+    }
+
     public class CallLogViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @Bind(R.id.item_host)
